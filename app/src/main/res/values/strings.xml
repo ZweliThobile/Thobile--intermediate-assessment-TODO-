@@ -1,3 +1,10 @@
 <resources>
     <string name="app_name">Thobile -intermediate assessment(TODO)</string>
+    <string name="title">Title</string>
+    <string name="home_screen">Home</string>
+    <string name="tasks_screen">My Tasks</string>
+    <string name="add_tasks_screen">Add Task</string>
+    <string name="add_a_note">Add a note</string>
+    <string name="save">Save</string>
+    <string name="database_name">task_db</string>
 </resources>
