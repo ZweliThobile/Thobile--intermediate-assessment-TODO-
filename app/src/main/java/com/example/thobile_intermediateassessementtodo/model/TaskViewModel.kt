@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.thobile_intermediateassessementtodo.repo.TaskRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -34,7 +35,9 @@ class TaskViewModel @Inject constructor(private val repository: TaskRepository):
         }
     }
 
-     fun addTask(task: Task) = viewModelScope.launch { repository.addTask(task) }
+     fun addTask(task: Task)  = viewModelScope.launch { repository.addTask(task) }
+
+      fun getTaskById(taskId: Int) = viewModelScope.launch { repository.getTaskById(taskId) }
 
 
 

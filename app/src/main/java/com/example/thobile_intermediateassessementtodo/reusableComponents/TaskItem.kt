@@ -1,6 +1,7 @@
 package com.example.thobile_intermediateassessementtodo.reusableComponents
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -19,17 +20,25 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.thobile_intermediateassessementtodo.model.Task
+import com.example.thobile_intermediateassessementtodo.model.TaskViewModel
 
 @Composable
-fun TaskItem(task: Task) {
+fun TaskItem(
+    task: Task,
+    onTaskClicked: (Task) -> Unit,
+) {
+
+
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .padding(8.dp)
             .background(if (task.isComplete) Color.Green.copy(alpha = 0.2f) else Color.Red.copy(alpha = 0.2f))
             .clip(RoundedCornerShape(12.dp))
-            .padding(12.dp),
+            .padding(12.dp).
+            clickable { onTaskClicked(task) },
         verticalAlignment = Alignment.CenterVertically
     ) {
         Text(

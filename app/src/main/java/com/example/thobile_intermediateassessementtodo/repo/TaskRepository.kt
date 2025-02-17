@@ -13,6 +13,8 @@ class TaskRepository @Inject constructor(private val taskDatabaseDao: TaskDataba
 
     suspend fun addTask(task: Task) = taskDatabaseDao.insert(task)
     suspend fun updateTask(task: Task) = taskDatabaseDao.update(task)
+
+    suspend fun getTaskById(taskId : Int) : Task = taskDatabaseDao.getTaskById(taskId)
     suspend fun deleteTask(task: Task) = taskDatabaseDao.deleteTask(task)
     suspend fun deleteAllTasks() = taskDatabaseDao.deleteAll()
      fun getAllTasks() : Flow<List<Task>> = taskDatabaseDao.getTasks().flowOn(Dispatchers.IO).conflate()

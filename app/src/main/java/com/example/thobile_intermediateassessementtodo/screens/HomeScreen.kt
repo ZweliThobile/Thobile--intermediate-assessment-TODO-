@@ -1,9 +1,9 @@
 package com.example.thobile_intermediateassessementtodo.screens
 
-import android.graphics.drawable.Icon
 import android.os.Build
-import android.widget.Toast
+import android.util.Log
 import androidx.annotation.RequiresApi
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
@@ -11,26 +11,20 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Notifications
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.produceState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -38,16 +32,16 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
+import coil.compose.rememberAsyncImagePainter
 import com.example.thobile_intermediateassessementtodo.R
+import com.example.thobile_intermediateassessementtodo.data.DataOrException
 import com.example.thobile_intermediateassessementtodo.model.Task
+import com.example.thobile_intermediateassessementtodo.model.WeatherObject
 import com.example.thobile_intermediateassessementtodo.navigation.TodoScreens
-import com.example.thobile_intermediateassessementtodo.reusableComponents.InputText
-import com.example.thobile_intermediateassessementtodo.reusableComponents.uiButton
 import com.example.thobile_intermediateassessementtodo.util.formatDate
 
 
@@ -56,8 +50,7 @@ import com.example.thobile_intermediateassessementtodo.util.formatDate
 @Composable
 fun HomeScreen(
     navController: NavController,
-    tasks : List<Task>,
-    onTaskClicked: (Task) -> Unit
+    homeViewModel: HomeViewModel = hiltViewModel()
 ) {
 
     
@@ -74,15 +67,12 @@ fun HomeScreen(
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(175.dp)
-                .padding(top = 15.dp, bottom = 15.dp)
-                .background(Color.Cyan),
+                .height(275.dp)
+                .padding(top = 15.dp, bottom = 15.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
 
-            Text(text = "Weather scope")
-
-
+showData(homeViewModel)
 
 
         }
@@ -106,7 +96,7 @@ fun HomeScreen(
             .fillMaxWidth()
             .height(35.dp)
             .clickable {
-navController.navigate(TodoScreens.TasksScreen.name)
+                navController.navigate(TodoScreens.TasksScreen.name)
             }
             .background(Color.LightGray)
             .padding(start = 10.dp, top = 5.dp),
@@ -117,17 +107,17 @@ navController.navigate(TodoScreens.TasksScreen.name)
                 color = Color.Black)
         }
 
-        LazyColumn{
-
-            items(tasks){ task ->
-                //Text(text = Task.title)
-
-                TaskRow(Task = task, onTaskClicked = {
-                    onTaskClicked(task)
-                })
-
-            }
-        }
+//        LazyColumn{
+//
+//            items(tasks){ task ->
+//                //Text(text = Task.title)
+//
+//                TaskRow(Task = task, onTaskClicked = {
+//                    onTaskClicked(task)
+//                })
+//
+//            }
+//        }
 
     }
 }
@@ -163,15 +153,62 @@ fun TaskRow(
 
 }
 
-
-
-@RequiresApi(Build.VERSION_CODES.O)
-@Preview(showBackground = true)
 @Composable
-fun HomeScreenPreview(){
-    val navController = rememberNavController()
-    HomeScreen(navController = navController, tasks = emptyList(), onTaskClicked = {})
+fun showData(homeViewModel: HomeViewModel) {
+    
+    val weatherData = produceState<DataOrException<WeatherObject,Boolean,Exception>>(
+        initialValue = DataOrException(loading = true)){
+        value= homeViewModel.getWeatherData("Johannesburg")
+    }.value
+    
+    if (weatherData.loading == true){
+        Log.d("INSIDE", "===========loading")
+//        CircularProgressIndicator()
+    }else if (weatherData.data != null){
 
+        val iconUrl = "https:" + weatherData.data!!.current.condition.icon
+        val temperature = weatherData.data!!.current.temp_c
+        val day = weatherData.data!!.current.is_day
+        val sunrise = weatherData.data!!.forecast.forecastday.get(0).astro.sunrise
+        val sunset = weatherData.data!!.forecast.forecastday.get(0).astro.sunset
+        weatherIcon(url = iconUrl)
 
+        Text(
+            text = "${temperature}°C",
+            style = MaterialTheme.typography.bodySmall,
+            fontWeight = FontWeight.Bold
+        )
 
+        Spacer(modifier = Modifier.height(8.dp))
+
+        Text(
+            text = "Day: ${day}",
+            style = MaterialTheme.typography.bodySmall
+        )
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        Text(
+            text = "Sunrise: $sunrise",
+            style = MaterialTheme.typography.bodySmall
+        )
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        Text(
+            text = "Sunset: $sunset",
+            style = MaterialTheme.typography.bodySmall
+        )
+    }
+    
 }
+
+@Composable
+fun weatherIcon(url: String) {
+    Image(
+        painter = rememberAsyncImagePainter(url),
+        contentDescription = "Weather Icon",
+        modifier = Modifier.size(64.dp)
+    )
+}
+

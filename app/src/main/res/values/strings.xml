@@ -3,8 +3,9 @@
     <string name="title">Title</string>
     <string name="home_screen">Home</string>
     <string name="tasks_screen">My Tasks</string>
+    <string name="view_tasks_screen">View Task</string>
     <string name="add_tasks_screen">Add Task</string>
-    <string name="add_a_note">Add a note</string>
+    <string name="add_a_task">Add a Task</string>
     <string name="save">Save</string>
     <string name="database_name">task_db</string>
 </resources>

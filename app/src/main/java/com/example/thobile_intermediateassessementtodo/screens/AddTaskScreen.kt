@@ -4,11 +4,13 @@ import android.os.Build
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -37,7 +39,8 @@ import com.example.thobile_intermediateassessementtodo.reusableComponents.uiButt
 @ExperimentalComposeUiApi
 @Composable
 fun AddTaskScreen(
-    navController: NavController
+    navController: NavController,
+    taskViewModel: TaskViewModel = hiltViewModel()
 
 ) {
 
@@ -65,7 +68,7 @@ fun AddTaskScreen(
 
         Column(
             modifier = Modifier
-                .fillMaxWidth()
+                .fillMaxSize()
                 .padding(top = 15.dp, bottom = 15.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
@@ -77,7 +80,7 @@ fun AddTaskScreen(
                 })
 
             InputText(modifier = Modifier.padding(top = 9.dp, bottom = 15.dp),
-                text = description, label = stringResource(id = R.string.add_a_note), onTextChange = {
+                text = description, label = stringResource(id = R.string.add_a_task), onTextChange = {
                     if (it.all { char -> char.isLetter() || char.isWhitespace() })
                         description = it
                 })
@@ -91,7 +94,7 @@ fun AddTaskScreen(
                 title = " "
                 description = " "
 
-                Toast.makeText(context,"Note added", Toast.LENGTH_SHORT).show()
+                Toast.makeText(context,"Task added", Toast.LENGTH_SHORT).show()
             }
             })
         }
@@ -102,14 +105,5 @@ fun AddTaskScreen(
 
 
 
-@OptIn(ExperimentalComposeUiApi::class)
-@RequiresApi(Build.VERSION_CODES.O)
-@Preview(showBackground = true)
-@Composable
-fun AddTasksPreview(){
-    val navController = rememberNavController()
-    AddTaskScreen(navController = navController)
 
 
-
-}
